@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0e0f12" />
+    <meta
+      name="description"
+      content="Suivi de performance musculation: seances, progression, historique, planification et export PDF."
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>IronPulse</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">FT</span>
+          <div>
+            <div class="brand-name">IronPulse</div>
+            <div class="brand-sub">Carnet de musculation premium</div>
+          </div>
+        </div>
+        <div class="status" id="connection-status">
+          <span class="status-dot"></span>
+          <span id="status-text">En ligne</span>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Navigation principale">
+        <button class="tab is-active" data-view="today">Seance</button>
+        <button class="tab" data-view="program">Programme</button>
+        <button class="tab" data-view="history">Historique</button>
+        <button class="tab" data-view="progress">Progression</button>
+        <button class="tab" data-view="plan">Plan</button>
+      </nav>
+
+      <main class="content">
+        <section id="today" class="view is-active">
+          <div class="grid two">
+            <div class="card hero">
+              <h1>Suivi simple, focus total</h1>
+              <p>Note tes series, analyse ta progression et garde le rythme sans friction.</p>
+              <div class="hero-actions">
+                <button class="primary" id="start-session">Demarrer une seance</button>
+                <button class="ghost" id="duplicate-last">Dupliquer la derniere seance</button>
+              </div>
+              <div class="quick-actions">
+                <div class="pill" id="sync-pill">Synchronise localement</div>
+                <div class="pill" id="last-sync">Derniere synchro : --</div>
+              </div>
+            </div>
+            <div class="card" id="today-summary">
+              <h2>Resume rapide</h2>
+              <div class="summary-grid" id="summary-grid"></div>
+            </div>
+          </div>
+
+          <div class="card" id="session-area">
+            <div class="card-head">
+              <h2>Seance active</h2>
+              <div class="card-actions">
+                <button class="ghost" id="save-session">Enregistrer</button>
+                <button class="ghost" id="cancel-session">Annuler</button>
+              </div>
+            </div>
+            <div class="muted" id="session-empty">
+              Aucune seance active. Choisis un jour dans le programme pour demarrer.
+            </div>
+            <div id="session-content"></div>
+          </div>
+        </section>
+
+        <section id="program" class="view">
+          <div class="card">
+            <div class="card-head">
+              <h2 id="program-title">Programme</h2>
+              <div class="card-actions">
+                <label class="inline-select">
+                  Template
+                  <select id="program-mode"></select>
+                </label>
+                <button class="ghost" id="import-program">Importer un programme</button>
+              </div>
+            </div>
+            <p class="muted" id="program-description">
+              Le programme est precharge avec les versions 3x/semaine et 4x/semaine, et peut etre remplace par un import CSV.
+            </p>
+            <div id="program-list" class="program-list"></div>
+          </div>
+
+          <div class="card">
+            <h2>Importer depuis Excel (CSV)</h2>
+            <p class="muted">
+              Exporte le fichier Excel en CSV avec les colonnes: jour, exercice, groupe, echauffement, series,
+              reps, rir, repos, notes, video, variantes.
+            </p>
+            <input type="file" id="csv-file" accept=".csv,text/csv,.txt" />
+            <button class="primary" id="load-csv">Charger le CSV</button>
+            <div class="hint" id="csv-status"></div>
+          </div>
+        </section>
+
+        <section id="history" class="view">
+          <div class="card">
+            <div class="card-head">
+              <h2>Historique</h2>
+              <button class="ghost" id="export-pdf">Exporter PDF</button>
+            </div>
+            <div class="filters">
+              <label>
+                Groupe musculaire
+                <select id="filter-group"></select>
+              </label>
+              <label>
+                Exercice
+                <select id="filter-exercise"></select>
+              </label>
+              <label>
+                Du
+                <input type="date" id="filter-from" />
+              </label>
+              <label>
+                Au
+                <input type="date" id="filter-to" />
+              </label>
+              <button class="ghost" id="reset-filters">Reinitialiser</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+          </div>
+        </section>
+
+        <section id="progress" class="view">
+          <div class="card">
+            <div class="card-head">
+              <h2>Progression</h2>
+              <label class="inline-select">
+                Exercice
+                <select id="progress-exercise"></select>
+              </label>
+            </div>
+            <div id="progress-stats" class="progress-stats"></div>
+            <canvas id="progress-chart" width="900" height="280"></canvas>
+          </div>
+        </section>
+
+        <section id="plan" class="view">
+          <div class="grid two">
+            <div class="card">
+              <h2>Planifier une semaine</h2>
+              <label>
+                Semaine
+                <input type="week" id="plan-week" />
+              </label>
+              <label>
+                Pattern
+                <select id="plan-pattern"></select>
+              </label>
+              <div id="custom-dates" class="custom-dates"></div>
+              <button class="primary" id="plan-week-btn">Planifier</button>
+            </div>
+            <div class="card">
+              <h2>Dupliquer une semaine</h2>
+              <label>
+                Semaine source
+                <input type="week" id="copy-from" />
+              </label>
+              <label>
+                Semaine cible
+                <input type="week" id="copy-to" />
+              </label>
+              <button class="ghost" id="copy-week-btn">Dupliquer</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Seances planifiees</h2>
+            <div id="planned-list" class="planned-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="start-modal" aria-hidden="true">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3>Demarrer une seance</h3>
+          <button class="ghost" id="close-modal">Fermer</button>
+        </div>
+        <label>
+          Choisir le jour
+          <select id="start-day"></select>
+        </label>
+        <label>
+          Date
+          <input type="date" id="start-date" />
+        </label>
+        <button class="primary" id="confirm-start">Demarrer</button>
+      </div>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
